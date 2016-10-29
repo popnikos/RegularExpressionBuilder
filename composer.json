@@ -1,5 +1,6 @@
 {
     "name": "popnikos/utils",
+    "description": "easing building of complexes PCRE regular expression",
     "require": {
       "php":"^5.6"  
     },
