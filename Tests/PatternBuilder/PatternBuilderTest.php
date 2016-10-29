@@ -1,6 +1,6 @@
 <?php
 
-namespace Popnikos\RegularExpressionBuilder\Tests\PatternBuilder;
+namespace Popnikos\RegularExpressionBuilder\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Popnikos\RegularExpressionBuilder\PatternBuilder;
@@ -17,7 +17,7 @@ class PatternBuilderTest extends TestCase
     public function test__construct()
     {
         $pattern = new PatternBuilder();
-        $this->assertInstanceOf('Popnikos\Utils\RegExp\PatternBuilder', $pattern);
+        $this->assertInstanceOf('Popnikos\RegularExpressionBuilder\PatternBuilder', $pattern);
     }
     
     /**

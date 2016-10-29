@@ -1,6 +1,6 @@
 <?php
 
-namespace Popnikos\RegularExpressionBuilder\PatternBuilder;
+namespace Popnikos\RegularExpressionBuilder;
 
 /**
  * Class PatternBuilder helps to build complex regular expression
