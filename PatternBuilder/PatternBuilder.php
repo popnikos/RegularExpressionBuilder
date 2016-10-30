@@ -88,6 +88,11 @@ class PatternBuilder
         return $this->capture;
     }
 
+    /**
+     * Declares the PatternBuilder as a subpattern
+     * @param boolean $group
+     * @return \Popnikos\RegularExpressionBuilder\PatternBuilder\PatternBuilder
+     */
     public function setGroup($group) {
         $this->group = $group;
         return $this;
@@ -180,6 +185,10 @@ class PatternBuilder
         return $this;
     }
     
+    /**
+     * Add a subpattern (no capture)
+     * @return \Popnikos\RegularExpressionBuilder\PatternBuilder\PatternBuilder
+     */
     public function subPattern()
     {
         $subpattern = (new PatternBuilder($this))->setGroup(true);
@@ -197,6 +206,7 @@ class PatternBuilder
     }
     /**
      * Add repetition predicate on last expression added
+     * Force using 0 as minimum occurs if $from is not set or other than a valid integer
      * @param int $from
      * @param int $to
      * @return \Popnikos\RegularExpressionBuilder\PatternBuilder
@@ -204,7 +214,7 @@ class PatternBuilder
     public function repeated($from=null,$to=null)
     {
         if( !empty($this->fragments) && (isset($from) || isset($to))) {
-            $from = isset($from)?intval($from):'';
+            $from = intval($from);
             $to = isset($to)?intval($to):'';
             return $this->add("{{$from},{$to}}");
         }
@@ -309,6 +319,7 @@ class PatternBuilder
     
     public function __toString()
     {
+        $string='';
         if( $this->getGroup() ) {
             $string .= '(';
         }

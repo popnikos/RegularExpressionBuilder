@@ -81,5 +81,14 @@ class PatternBuilderTest extends TestCase
         $this->assertRegExp("{$pattern}", "blablaa");
         $this->assertRegExp("{$pattern}", "blablaaa");
         $this->assertRegExp("{$pattern}", "blablaaa");
+        
+        $pattern = new PatternBuilder();
+        $pattern->subPattern()->contains('string')->end()->repeated(2);
+        $this->assertNotRegExp("{$pattern}", "this is one string");
+        $this->assertRegExp("{$pattern}", "this is two stringstring");
+        $this->assertRegExp("{$pattern}", "this is two stringstringstring");
+        
     }
+    
+    
 }
