@@ -1,6 +1,6 @@
 <?php
 
-namespace Popnikos\RegularExpressionBuilder;
+namespace Popnikos\RegularExpressionBuilder\PatternBuilder;
 
 /**
  * Class PatternBuilder helps to build complex regular expression
@@ -68,7 +68,7 @@ class PatternBuilder
     /**
      * 
      * @param array $fragments Array of mixed string / Pattern values
-     * @return \Popnikos\Utils\RegExp\PatternBuilder
+     * @return \Popnikos\RegularExpressionBuilder\PatternBuilder
      */
     public function setFragments($fragments) 
     {
@@ -199,7 +199,7 @@ class PatternBuilder
      * Add repetition predicate on last expression added
      * @param int $from
      * @param int $to
-     * @return \Popnikos\Utils\RegExp\PatternBuilder
+     * @return \Popnikos\RegularExpressionBuilder\PatternBuilder
      */
     public function repeated($from=null,$to=null)
     {

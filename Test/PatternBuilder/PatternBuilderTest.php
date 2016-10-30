@@ -3,10 +3,10 @@
 namespace Popnikos\RegularExpressionBuilder\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Popnikos\RegularExpressionBuilder\PatternBuilder;
+use Popnikos\RegularExpressionBuilder\PatternBuilder\PatternBuilder;
 /**
  * Test class PatternBuilderTest
- * Tests for Popnikos\RegExp\Pattern
+ * Tests for Popnikos\RegularExpressionBuilder\PatternBuilder
  * @author popnikos
  */
 class PatternBuilderTest extends TestCase
@@ -17,7 +17,7 @@ class PatternBuilderTest extends TestCase
     public function test__construct()
     {
         $pattern = new PatternBuilder();
-        $this->assertInstanceOf('Popnikos\RegularExpressionBuilder\PatternBuilder', $pattern);
+        $this->assertInstanceOf('Popnikos\RegularExpressionBuilder\PatternBuilder\PatternBuilder', $pattern);
     }
     
     /**
@@ -28,7 +28,7 @@ class PatternBuilderTest extends TestCase
     {
         $pattern = new PatternBuilder();
         $this->assertNull($pattern->getParent());
-        $this->assertInstanceOf('Popnikos\Utils\RegExp\PatternBuilder', $pattern->setParent(new PatternBuilder())->getParent());
+        $this->assertInstanceOf('Popnikos\RegularExpressionBuilder\PatternBuilder\PatternBuilder', $pattern->setParent(new PatternBuilder())->getParent());
     }
     
     /**
@@ -76,7 +76,7 @@ class PatternBuilderTest extends TestCase
     {
         $pattern = new PatternBuilder();
         $pattern->add('a');
-        $pattern->repeated(null, 3);
+        $pattern->repeated(0, 3);
         $this->assertRegExp("{$pattern}", "blabla");
         $this->assertRegExp("{$pattern}", "blablaa");
         $this->assertRegExp("{$pattern}", "blablaaa");
