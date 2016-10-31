@@ -1,7 +1,7 @@
 # RegularExpressionBuilder
 ## Installation
 You can use composer to add github repository
-<pre><code class="json">
+```json
 {
     "repositories": [
         {
@@ -13,10 +13,11 @@ You can use composer to add github repository
         "popnikos/RegularExpressionBuilder": "*"
     }
 }
-</code></pre>
+```
 
 ## Examples
-<pre><code class="php">
+
+```php
 
 use Popnikos\RegularExpressionBuilder\PatternBuilder\PatternBuilder;
 
@@ -30,7 +31,7 @@ $builder
         ->endsWith('end of string');
 
 echo "{$builder}"; // "/^start string(capture|other capture)end of string$/"
-</code></pre>
+```
 
 Adding a subpattern
 
