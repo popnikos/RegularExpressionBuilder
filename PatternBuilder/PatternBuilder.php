@@ -10,6 +10,17 @@ namespace Popnikos\RegularExpressionBuilder\PatternBuilder;
  */
 class PatternBuilder
 {
+    const PCRE_CASELESS = 'i';
+    const PCRE_MULTILINE = 'm';
+    const PCRE_DOTALL = 's';
+    const PCRE_EXTENDED = 'x';
+    const PCRE_ANCHORED = 'A';
+    const PCRE_DOLLAR_ENDONLY = 'D';
+    const PCRE_UNGREEDY = 'U';
+    const PCRE_EXTRA = 'X';
+    const PCRE_INFO_JCHANGED = 'J';
+    const PCRE_UTF8 = 'u';
+    
     private $parent;
     
     private $fragments=[];
@@ -129,9 +140,18 @@ class PatternBuilder
      * 
      * @return PatternBuilder
      */
-    public function anything()
+    public function any()
     {
         return $this->add('.');
+    }
+    
+    /**
+     * 
+     * @return PatternBuilder
+     */
+    public function something()
+    {
+        return $this->add('.*');
     }
     
     /**
@@ -189,7 +209,7 @@ class PatternBuilder
      * Add a subpattern (no capture)
      * @return \Popnikos\RegularExpressionBuilder\PatternBuilder\PatternBuilder
      */
-    public function subPattern()
+    public function & subPattern()
     {
         $subpattern = (new PatternBuilder($this))->setGroup(true);
         $this->add($subpattern);
@@ -281,14 +301,22 @@ class PatternBuilder
         return $this;
     }
     
-    public function ou($expression)
+    /**
+     * Add an alternative into a group/subpattern (with or without capture)
+     * @param string|PatternBuilder $expression
+     * @return \Popnikos\RegularExpressionBuilder\PatternBuilder\PatternBuilder
+     */
+    public function orExp($expression)
     {
         if( $this->getGroup() ) {
-            $this->add('|')->add($expression);
+            if( !empty($this->fragments)) {
+                $this->add('|');
+            }
+            $this->add($expression);
             return $this;
         } 
-        // @TODO faire le lien avec la précedente expression présente
     }
+    
     /**
      * @param string $expression
      */
@@ -298,25 +326,92 @@ class PatternBuilder
     }
     
     /**
+     * Add option to pattern (after checking option is not already set)
+     * @link http://php.net/manual/en/reference.pcre.pattern.modifiers.php PHP Manual
+     * @param string $option
+     */
+    private function addOption($option) {
+        if( !in_array($option, $this->options))
+        {
+            $this->options[]= $option;
+        }
+        return $this;
+    }
+    
+    /**
+     * Add the caseless PCRE Option
      * @return PatternBuilder
      */
     public function caseless()
     {
-        $this->options[]= 'i';
-        return $this;
+        return $this->addOption(self::PCRE_CASELESS);
     }
     
+    /**
+     * Add the multiline PCRE Option
+     * @return \Popnikos\RegularExpressionBuilder\PatternBuilder\PatternBuilder
+     */
     public function multiline()
     {
-        $this->options[]= 'm';
-        return $this;
-    }
-    public function ungreedy()
-    {
-        $this->options[]= 'U';
-        return $this;
+        return $this->addOption(self::PCRE_MULTILINE);
     }
     
+    /**
+     * Add the Ungreedy PCRE Option
+     * @return \Popnikos\RegularExpressionBuilder\PatternBuilder\PatternBuilder
+     */
+    public function ungreedy()
+    {
+        return $this->addOption(self::PCRE_UNGREEDY);
+    }
+    
+    /**
+     * Add a lookahead positive assertion
+     * @param string $expression The main expression
+     * @param string $assertion The Assertion expression
+     * @return type
+     */
+    public function lookahead($expression, $assertion)
+    {
+        return $this->add($expression, true)->add('(?=')->add($assertion)->add(')');
+    }
+    
+    /**
+     * Negative lookahead assertion
+     * @param string $expression
+     * @param string $assertion
+     * @return PatternBuilder
+     */
+    public function notLookahead($expression, $assertion)
+    {
+        return $this->add($expression, true)->add('(?!')->add($assertion)->add(')');
+    }
+    
+    /**
+     * Positive lookbehind assertion
+     * @param string $expression
+     * @param string $assertion
+     * @return PatternBuilder
+     */
+    public function lookbehind($expression,$assertion) 
+    {
+        return $this->add('(?<=')->add($assertion)->add(')')->add($expression, true);
+    }
+    
+    /**
+     * Negative lookbehind assertion 
+     * @param string $expression
+     * @param string $assertion
+     * @return PatternBuilder
+     */
+    public function notLookbehind($expression,$assertion) 
+    {
+        return $this->add('(?<!')->add($assertion)->add(')')->add($expression, true);
+    }
+    /**
+     * Render the pattern as it can be used into a preg_...function
+     * @return string
+     */
     public function __toString()
     {
         $string='';
@@ -324,7 +419,8 @@ class PatternBuilder
             $string .= '(';
         }
         if( $this->getGroup() && !$this->getCapture()) {
-            $string .= '?:';
+            $string .= '?' . implode('',  array_unique($this->options)) . ':';
+            
         }
         foreach ($this->getFragments() as $fragment) {
             if ( is_string($fragment) ) {
@@ -333,10 +429,10 @@ class PatternBuilder
                 $string.=strval($fragment);
             }
         }
-        if( $this->getGroup()) {
+        if ($this->getGroup()) {
             $string.=')';
         }
-        if( !isset($this->parent)) {
+        if (!$this->hasParent()) {
             $string = "/" . $string . "/";
             $string .= implode('',array_unique($this->options));
         }

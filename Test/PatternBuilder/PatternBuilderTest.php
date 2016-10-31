@@ -4,6 +4,7 @@ namespace Popnikos\RegularExpressionBuilder\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Popnikos\RegularExpressionBuilder\PatternBuilder\PatternBuilder;
+use ReflectionClass;
 /**
  * Test class PatternBuilderTest
  * Tests for Popnikos\RegularExpressionBuilder\PatternBuilder
@@ -37,7 +38,7 @@ class PatternBuilderTest extends TestCase
     public function testEscape()
     {
         $pattern = new PatternBuilder();
-        $reflex = new \ReflectionClass($pattern);
+        $reflex = new ReflectionClass($pattern);
         $method = $reflex->getMethod('escape');
         $method->setAccessible(true);
         $this->assertEquals('basic string test',$method->invoke($pattern,'basic string test'));
@@ -58,6 +59,8 @@ class PatternBuilderTest extends TestCase
     
     /**
      * @covers PatternBuilder::__toString
+     * @covers PatternBuilder::endCapture
+     * @covers PatternBuilder::endsWith
      */
     public function test__toString()
     {
@@ -66,7 +69,7 @@ class PatternBuilderTest extends TestCase
                 ->startWith('toto')
                 ->startCapture()
                     ->add('capture1')
-                    ->ou('capture2')
+                    ->orExp('capture2')
                 ->endCapture()
                 ->endsWith('tata');
         $this->assertEquals("/^toto(capture1|capture2)tata$/", strval($pattern));
@@ -82,13 +85,18 @@ class PatternBuilderTest extends TestCase
         $this->assertRegExp("{$pattern}", "blablaaa");
         $this->assertRegExp("{$pattern}", "blablaaa");
         
-        $pattern = new PatternBuilder();
-        $pattern->subPattern()->contains('string')->end()->repeated(2);
-        $this->assertNotRegExp("{$pattern}", "this is one string");
-        $this->assertRegExp("{$pattern}", "this is two stringstring");
-        $this->assertRegExp("{$pattern}", "this is two stringstringstring");
-        
+        $subpattern = new PatternBuilder();
+        $subpattern->subPattern()->contains('string')->end()->repeated(2);
+        $this->assertNotRegExp("{$subpattern}", "this is one string");
+        $this->assertRegExp("{$subpattern}", "this is two stringstring");
+        $this->assertRegExp("{$subpattern}", "this is two stringstringstring");
     }
     
+    public function testOptions()
+    {
+        $pattern = new PatternBuilder();
+        $pattern->contains('toto')->caseless();
+        $this->assertEquals("/toto/i", strval($pattern));
+    }
     
 }
