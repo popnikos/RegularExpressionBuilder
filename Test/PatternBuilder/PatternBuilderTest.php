@@ -95,8 +95,18 @@ class PatternBuilderTest extends TestCase
     public function testOptions()
     {
         $pattern = new PatternBuilder();
-        $pattern->contains('toto')->caseless();
-        $this->assertEquals("/toto/i", strval($pattern));
+        $pattern
+                ->contains('toto')
+                ->multiline()
+                ->ungreedy();
+        $this->assertEquals("/toto/mU", strval($pattern));
+        
+        $pattern->subPattern()
+                ->contains('test')
+                ->orExp('tset')
+                ->caseless();
+        $this->assertEquals("/toto(?i:test|tset)/mU", strval($pattern));
+        
     }
     
 }
