@@ -33,8 +33,8 @@ echo "{$builder}"; // "/^start string(capture|other capture)end of string$/"
 </code></pre>
 
 Adding a subpattern
-<pre><code class="php">
 
+```php
 $pattern = new PatternBuilder();
 
 $pattern
@@ -49,4 +49,4 @@ $pattern
         ->contains('something');
     
 echo "{$pattern}"; // "/toto(?i:test|tset)something/mU"
-</code></pre>
+```
